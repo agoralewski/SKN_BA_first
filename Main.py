@@ -1,11 +1,12 @@
 #Imports
+from config import main_config as mc #user specific config
 import pandas as pd
 
 #Parameters
-filelocation = 'C:/datasets'
+filelocation = mc.DATA_SET_DIR_PATH
 
 #Getting Data
-train = pd.read_csv(filelocation+'/train.csv')
+train = pd.read_csv(filelocation+'train_simplified/tiger.csv')
 print(train.shape)
 print(train.head(5))
 
