@@ -1,12 +1,13 @@
 #Imports
-import os
+from config import main_config as mc #user specific config
 import pandas as pd
+import os
 
 #Parameters
-filelocation = 'C:/datasets/'
+filelocation = mc.DATA_SET_DIR_PATH
 
 #Getting Data
-train_files = os.listdir(filelocation+"/train_simplified/")
+train_files = os.listdir(filelocation+"train_simplified/")
 print(train_files[:5])
 columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
 selected_categories=['airplan', 'axe' 'book' 'bowtie', 'cake' 'calculator']
