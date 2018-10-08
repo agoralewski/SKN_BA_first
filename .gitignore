@@ -108,3 +108,6 @@ venv.bak/
 *.iml
 out
 gen
+
+### VisualStudioCode template
+.vscode/*
