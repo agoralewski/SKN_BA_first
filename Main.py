@@ -10,7 +10,7 @@ filelocation = mc.DATA_SET_DIR_PATH
 train_files = os.listdir(filelocation+"train_simplified/")
 print(train_files[:5])
 columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
-selected_categories=['airplan', 'axe' 'book' 'bowtie', 'cake' 'calculator']
+selected_categories=['airplane', 'axe' 'book' 'bowtie', 'cake' 'calculator']
 
 train = pd.read_csv(filelocation + 'train_simplified/' + train_files[0]).head(1000)
 for file in train_files[1:61]:
