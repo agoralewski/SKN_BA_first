@@ -111,3 +111,7 @@ gen
 
 ### VisualStudioCode template
 .vscode/*
+
+
+*.csv
+
