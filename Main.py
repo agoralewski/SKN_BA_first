@@ -13,9 +13,10 @@ print(train_files[:5])
 columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
 selected_categories=['airplane', 'axe' 'book' 'bowtie', 'cake' 'calculator']
 
-train = pd.read_csv(filelocation + 'train_simplified/' + train_files[0]).head(nb_training_cases_per_cat)
-for file in train_files[1:61]:
-    sub_train=pd.read_csv(filelocation + 'train_simplified/' + file).head(nb_training_cases_per_cat)
+train = pd.read_csv(filelocation + 'train_simplified/' + train_files[0], nrows=nb_training_cases_per_cat)
+for file in train_files[1:10]:
+    sub_train=pd.read_csv(filelocation + 'train_simplified/' + file, nrows=nb_training_cases_per_cat)
+    sub_train = sub_train[sub_train.recognized==True]
     train = train.append(sub_train)
     print(train.shape)
 
@@ -23,7 +24,7 @@ print('!!! END !!! Train Test Size:', train.shape)
 print(train.head(5))
 
 ### Filter for selected categories
-train_selected = train.loc[train['word'].isin(selected_categories)]
+# train_selected = train.loc[train['word'].isin(selected_categories)]
 
 #Data transformation
 
