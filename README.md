@@ -4,10 +4,10 @@
 Link do konkursu: https://www.kaggle.com/c/quickdraw-doodle-recognition
 
 **Spotkanie 24 października** - Skończyć kod od importu do eksportu
-* Import danych - done
-* Przekształcenie danych do modelu, podział zbioru - funkcja przepisująca wektory na obrazki
-* Model - prosta sieć neuronowa (3 warstwy, na podzbiorze 5 kategorii, 5 outputów)
-* Export predykcji w formacie konkursowym
+- [x] Import danych - done
+- [ ] Przekształcenie danych do modelu, podział zbioru - funkcja przepisująca wektory na obrazki
+- [ ] Model - prosta sieć neuronowa (3 warstwy, na podzbiorze 5 kategorii, 5 outputów)
+- [ ] Export predykcji w formacie konkursowym
 
 Ważne terminy:
 - 27.11.2018 - Team Merger deadline
