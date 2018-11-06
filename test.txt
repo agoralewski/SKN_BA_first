@@ -1,4 +1,4 @@
-﻿Lista osób, które ogarnęły (trochę) Githuba:
+Lista osób, które ogarnęły (trochę) Githuba:
 
 Adrianna Napiórkowska
 Artur Góralewski
@@ -8,4 +8,6 @@ Michal Ciesielski
 Maciej Beręsewicz
 Magda Ponikowska
 Kamil Pizoń
-Jakub Miksa Julia Migasiewicz
+Jakub Miksa
+Julia Migasiewicz
+Ewa Habierska
