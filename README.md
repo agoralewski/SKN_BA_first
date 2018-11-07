@@ -1,7 +1,13 @@
-﻿## Pierwszy projekt SKN Business Analytics
+## Pierwszy projekt SKN Business Analytics
 ### Quick, Draw! Doodle Recognition Challenge
 
 Link do konkursu: https://www.kaggle.com/c/quickdraw-doodle-recognition
+
+**Spotkanie 7 listopada** - Skończyć kod (wersja podstawowa) + przetestować kilka modeli
+- [ ] *Przekształcenie danych do modelu, podział zbioru - funkcja przepisująca wektory na obrazki*
+- [ ] *Export predykcji w formacie konkursowym*
+- [ ] Zbudowanie kilku modeli sieci neuronowych 
+- [ ] Porównanie stworzonych modeli 
 
 **Spotkanie 24 października** - Skończyć kod od importu do eksportu
 - [x] Import danych - done
