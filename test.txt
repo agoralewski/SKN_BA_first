@@ -12,3 +12,4 @@ Jakub Miksa
 Julia Migasiewicz
 Ewa Habierska
 Konstantyn Flisiuk
+Dmytro Bulakh
