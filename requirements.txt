@@ -1,0 +1,7 @@
+numpy
+virtualenv
+scipy
+tensorflow
+tensorflow-gpu
+keras
+pandas
