@@ -59,6 +59,21 @@ print(train.head(5))
 # train_selected = train.loc[train['word'].isin(selected_categories)]
 
 #Data transformation
+import pandas as pd
+import ast
+import matplotlib.pyplot as plt
+test_raw = pd.read_csv("C:/Users/madziura98/Downloads/test_raw.csv", index_col = "key_id", nrows = 100)
+
+#first 100 drawings
+first_ten_ids = test_raw.iloc[:100].index
+
+raw_images = [ast.literal_eval(lst) for lst in test_raw.loc[first_ten_ids, 'drawing']]
+for i in range(len(raw_images)):
+    for x,y,t in raw_images[i]:
+        plt.figure(figsize=(2,1))
+        plt.subplot(1,2,1)
+        plt.plot(x, y, marker = ".")
+        plt.gca().invert_yaxis()
 
 #Model
 #CNN
