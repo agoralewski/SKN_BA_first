@@ -35,6 +35,19 @@ def create_dummy_submission(dataset_location, num_to_class):
                       )
 
 
+def create_bitmap(input_json):
+    image = Image.new("P", (256,256), color=255)
+    image_draw = ImageDraw.Draw(image)
+    for stroke in json.loads(input_json):  # ast.literal_eval(input_json):
+        for i in range(len(stroke[0])-1):
+            image_draw.line([stroke[0][i],
+                             stroke[1][i],
+                             stroke[0][i+1],
+                             stroke[1][i+1]],
+                            fill=0, width=5)
+    # image = image.resize((imheight, imwidth))
+    return np.array(image)/255.
+
 
 def draw_raw_data_first_try():
     """ first try analyze raw data - drawings from Magda"""
