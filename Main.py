@@ -8,7 +8,6 @@ import json
 from tqdm import tqdm, tnrange  # trange(i) is a special optimised instance of tqdm(range(i))
 from PIL import Image, ImageDraw
 
-
 # Imports for the CNN
 import tensorflow as tf
 from tensorflow import keras
@@ -35,25 +34,42 @@ def create_dummy_submission(dataset_location, num_to_class):
                       )
 
 
-def create_bitmap(input_json):
+def create_bitmap(input_json, bitmap_height=256, bitmap_width=256):
+    """
+    Creates the bitmap of the drawing.
+    Parameters
+    ----------
+    :param input_json: str
+    A string that contains JSON array representing the simplified vector drawing.
+    Array contains strokes. Each stroke is the two lists - first of Xs, second Ys
+    [[[x0, x1, ...], [y0, y1, ...]], [[x0, x1, ...], [y0, y1, ...]]]
+    :param bitmap_height: int
+    bitmap height
+    :param bitmap_width: int
+    bitmap width
+    Returns
+    -------
+    bitmap : array of floats
+    The bitmap which contains the drawing - 0.0 is the background, 1.0 is the drawing line
+    """
     image = Image.new("P", (256, 256), color=255)
     image_draw = ImageDraw.Draw(image)
     for stroke in json.loads(input_json):  # ast.literal_eval(input_json):
-        for i in range(len(stroke[0])-1):
+        for i in range(len(stroke[0]) - 1):
             image_draw.line([stroke[0][i],
                              stroke[1][i],
-                             stroke[0][i+1],
-                             stroke[1][i+1]],
+                             stroke[0][i + 1],
+                             stroke[1][i + 1]],
                             fill=0, width=5)
-    # image = image.resize((imheight, imwidth))
-    return np.array(image)/255.
+    image = image.resize((bitmap_height, bitmap_width))
+    return np.array(image) / 255.
 
 
 def draw_raw_data_first_try():
     """ first try analyze raw data - drawings from Magda"""
     import ast
     import matplotlib.pyplot as plt
-    test_raw = pd.read_csv(filelocation+"/test_raw.csv", index_col="key_id", nrows=100)
+    test_raw = pd.read_csv(filelocation + "/test_raw.csv", index_col="key_id", nrows=100)
 
     # first 10 drawings
     first_ten_ids = test_raw.iloc[:10].index
@@ -68,14 +84,14 @@ def draw_raw_data_first_try():
 
 
 # Getting Data
-train_files = os.listdir(filelocation+"train_simplified/")
+train_files = os.listdir(filelocation + "train_simplified/")
 num_to_class = {i: v[:-4].replace(" ", "_") for i, v in enumerate(train_files)}  # adds underscores
 
 columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
 selected_categories = ['airplane', 'axe', 'book', 'bowtie', 'cake', 'calculator']
 
 if RunForSelectedCategories:
-    train_files = [x+'.csv' for x in selected_categories]
+    train_files = [x + '.csv' for x in selected_categories]
     print(train_files)
 
 train = pd.read_csv(filelocation + 'train_simplified/' + train_files[0], nrows=nb_training_cases_per_cat)
@@ -114,3 +130,8 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
 # Export results to submission file
 create_dummy_submission(filelocation, num_to_class)
+
+
+
+
+
