@@ -83,9 +83,13 @@ def draw_raw_data_first_try():
             plt.gca().invert_yaxis()
 
 
+def create_classes_dictionary(train_files_names):
+    return {i: v[:-4].replace(" ", "_") for i, v in enumerate(train_files_names)}  # adds underscores
+
+
 # Getting Data
 train_files = os.listdir(filelocation + "train_simplified/")
-num_to_class = {i: v[:-4].replace(" ", "_") for i, v in enumerate(train_files)}  # adds underscores
+num_to_class = create_classes_dictionary(train_files)
 
 columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
 selected_categories = ['airplane', 'axe', 'book', 'bowtie', 'cake', 'calculator']
