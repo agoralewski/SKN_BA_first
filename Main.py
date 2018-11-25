@@ -112,6 +112,7 @@ def read_train_simplified_csv(files_location, category, nrows=None, drawing_tran
     return df
 
 
+
 # Getting Data
 train_files = os.listdir(files_location + "train_simplified/")
 print(train_files)
@@ -120,16 +121,14 @@ num_to_class = create_classes_dictionary(train_files)
 columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
 selected_categories = ['airplane', 'axe', 'book', 'bowtie', 'cake', 'calculator']
 
-if run_selected_categories:
-    train_files = [x + '.csv' for x in selected_categories]
-    print(train_files)
-
-train = read_train_simplified_csv(files_location, train_files[0], nb_training_cases_per_cat)
-for file in train_files[1:]:
-    print(file)
-    sub_train = read_train_simplified_csv(files_location, file, nrows=nb_training_cases_per_cat)
-    sub_train = sub_train[sub_train.recognized]
-    train = train.append(sub_train)
+train = None
+for i, category in enumerate(selected_categories) if run_selected_categories else num_to_class.items():
+    print(category)
+    if i == 0:
+        train = read_train_simplified_csv(files_location, category, nb_training_cases_per_cat)
+    else:
+        train = train.append(read_train_simplified_csv(files_location, category, nb_training_cases_per_cat))
+        # sub_train = sub_train[sub_train.recognized] # TODO lets think about this filtration
     print(train.shape)
     print(train.shape[1])
 
@@ -160,7 +159,6 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
 # Export results to submission file
 create_dummy_submission(files_location, num_to_class)
-
 
 
 
