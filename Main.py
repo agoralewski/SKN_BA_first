@@ -18,7 +18,8 @@ from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 files_location = mc.DATA_SET_DIR_PATH
 nb_training_cases_per_cat = 300
 run_selected_categories = True
-NUM_SHUFFLED_CSV = 100
+SHUFFLED_CSV_NUMBER = 100
+ROWS_PER_CLASS = 30000
 
 
 # functions
@@ -42,17 +43,17 @@ def create_bitmap(input_json, bitmap_height=256, bitmap_width=256):
     Parameters
     ----------
     :param input_json: str
-    A string that contains JSON array representing the simplified vector drawing.
-    Array contains strokes. Each stroke is the two lists - first of Xs, second Ys
-    [[[x0, x1, ...], [y0, y1, ...]], [[x0, x1, ...], [y0, y1, ...]]]
+        A string that contains JSON array representing the simplified vector drawing.
+        Array contains strokes. Each stroke is the two lists - first of Xs, second Ys
+        [[[x0, x1, ...], [y0, y1, ...]], [[x0, x1, ...], [y0, y1, ...]]]
     :param bitmap_height: int
-    bitmap height
+        bitmap height
     :param bitmap_width: int
-    bitmap width
+        bitmap width
     Returns
     -------
     bitmap : array of floats
-    The bitmap which contains the drawing - 0.0 is the background, 1.0 is the drawing line
+        The bitmap which contains the drawing - 0.0 is the background, 1.0 is the drawing line
     """
     image = Image.new("P", (256, 256), color=255)
     image_draw = ImageDraw.Draw(image)
@@ -95,18 +96,19 @@ def read_train_simplified_csv(files_location, category, nrows=None, drawing_tran
     Parameters
     ----------
     :param files_location: str
-    data set location
+        data set location
     :param category: str
-    category of data to be read
+        category of data to be read
     :param nrows: int
-    number of rows to read form one file
+        number of rows to read form one file
     :param drawing_transform: bool
-    True if drawing have to be interpret as JSON
+        True if drawing have to be interpret as JSON
     Returns
     -------
     DataFrame : contains data from simplified csv file
     """
-    df = pd.read_csv(os.path.join(files_location, 'train_simplified', category + '.csv'), nrows=nrows)
+    file_name = category.replace("_", " ") + '.csv'
+    df = pd.read_csv(os.path.join(files_location, 'train_simplified', file_name), nrows=nrows)
     if drawing_transform:
         df['drawing'] = df['drawing'].apply(json.loads)
     return df
