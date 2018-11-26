@@ -15,11 +15,11 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
 # Parameters
-files_location = mc.DATA_SET_DIR_PATH
+FILES_LOCATION = mc.DATA_SET_DIR_PATH
 nb_training_cases_per_cat = 300
 run_selected_categories = True
 SHUFFLED_CSV_NUMBER = 100
-ROWS_PER_CLASS = 30000
+ROWS_PER_CLASS = 300
 
 
 # functions
@@ -114,53 +114,94 @@ def read_train_simplified_csv(files_location, category, nrows=None, drawing_tran
     return df
 
 
+def create_shuffled_data(source_files_location, destination_files_location, num_to_class, shuffled_csv_number, rows_per_class=None):
+    """
+    function creates CSVs with shuffled data inside
+    :param source_files_location:
+        data set location
+    :param destination_files_location:
+        shuffled files catalogue
+    :param num_to_class:
+        dictionary of classes
+    :param shuffled_csv_number:
+        number of final CSVs with shuffled data
+    :param rows_per_class:
+        number of rows taken from source data file
+    """
+    # divide records among shuffled_csv_number files
+    for i, category in tqdm(num_to_class.items()):
+        df = read_train_simplified_csv(source_files_location, category, nrows=rows_per_class)
+        df['hash'] = (df.key_id // 10 ** 7) % shuffled_csv_number  # let's say hash function
+        for k in range(shuffled_csv_number):
+            filename = destination_files_location+'train_{}.csv'.format(k)
+            chunk = df[df.hash == k]
+            chunk = chunk.drop(['key_id'], axis='columns')
+            if i == 0:
+                chunk.to_csv(filename, index=False)
+            else:
+                chunk.to_csv(filename, mode='a', header=False, index=False)
 
-# Getting Data
-train_files = os.listdir(files_location + "train_simplified/")
-print(train_files)
-num_to_class = create_classes_dictionary(train_files)
-
-columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
-selected_categories = ['airplane', 'axe', 'book', 'bowtie', 'cake', 'calculator']
-
-train = None
-for i, category in enumerate(selected_categories) if run_selected_categories else num_to_class.items():
-    print(category)
-    if i == 0:
-        train = read_train_simplified_csv(files_location, category, nb_training_cases_per_cat)
-    else:
-        train = train.append(read_train_simplified_csv(files_location, category, nb_training_cases_per_cat))
-        # sub_train = sub_train[sub_train.recognized] # TODO lets think about this filtration
-    print(train.shape)
-    print(train.shape[1])
-
-print('!!! END !!! Train Test Size:', train.shape)
-print(train.head(5))
-
-# Filter for selected categories
-# train_selected = train.loc[train['word'].isin(selected_categories)]
-
-# Data transformation
-
-
-# Model
-# CNN
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(64, 64, 1), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(32, kernel_size=(3, 3), padding='same', activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Flatten())
-model.add(Dense(train.shape[0], activation='softmax'))
-model.summary()
-
-# Compilation of the model
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-# Model Evaluation
-
-# Export results to submission file
-create_dummy_submission(files_location, num_to_class)
+    # randomize records inside files
+    for k in tqdm(range(shuffled_csv_number)):
+        filename = destination_files_location+'train_{}.csv'.format(k)
+        if os.path.exists(filename):
+            df = pd.read_csv(filename)
+            df['rnd'] = np.random.rand(len(df))
+            df = df.sort_values(by='rnd').drop('rnd', axis='columns')
+            df.to_csv(filename + '.gz', compression='gzip', index=False)
+            os.remove(filename)
+            print(df.shape)
 
 
+if __name__ == '__main__':
+    start = datetime.datetime.now()
+    # Getting Data
+    train_files = os.listdir(FILES_LOCATION + "train_simplified/")
+    print(train_files)
+    num_to_class = create_classes_dictionary(train_files)
+
+    columns = ['countrycode', 'drawing', 'key_id', 'recognized', 'timestamp', 'word']
+    selected_categories = ['airplane', 'axe', 'book', 'bowtie', 'cake', 'calculator']
+
+    train = None
+    for i, category in enumerate(selected_categories) if run_selected_categories else num_to_class.items():
+        print(category)
+        if i == 0:
+            train = read_train_simplified_csv(FILES_LOCATION, category, nb_training_cases_per_cat)
+        else:
+            train = train.append(read_train_simplified_csv(FILES_LOCATION, category, nb_training_cases_per_cat))
+            # sub_train = sub_train[sub_train.recognized] # TODO lets think about this filtration
+        print(train.shape)
+        print(train.shape[1])
+
+    print('!!! END !!! Train Test Size:', train.shape)
+    print(train.head(5))
+
+    # be careful when changing the number of files and the number of records from one file !!!
+    # it takes time and disc space !!!
+    create_shuffled_data(FILES_LOCATION, FILES_LOCATION + "shuffled/", num_to_class, SHUFFLED_CSV_NUMBER, ROWS_PER_CLASS)
+
+    # Data transformation
+
+    # Model
+    # CNN
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(64, 64, 1), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+    model.add(Dense(train.shape[0], activation='softmax'))
+    model.summary()
+
+    # Compilation of the model
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+    # Model Evaluation
+
+    # Export results to submission file
+    create_dummy_submission(FILES_LOCATION, num_to_class)
+
+    end = datetime.datetime.now()
+    print('Latest run {}.\nTotal time {}s'.format(end, (end - start).seconds))
 
