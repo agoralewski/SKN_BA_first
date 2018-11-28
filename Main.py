@@ -7,12 +7,13 @@ import datetime
 import json
 from tqdm import tqdm, tnrange  # trange(i) is a special optimised instance of tqdm(range(i))
 from PIL import Image, ImageDraw
+from dask import bag
 
 # Imports for the CNN
-import tensorflow as tf
-from tensorflow import keras
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+#import tensorflow as tf
+#from tensorflow import keras
+#from keras.models import Sequential
+#from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
 # Parameters
 FILES_LOCATION = mc.DATA_SET_DIR_PATH
@@ -177,25 +178,81 @@ if __name__ == '__main__':
     print('!!! END !!! Train Test Size:', train.shape)
     print(train.head(5))
 
+    train=train[['drawing', 'word']]
+    print(train.tail(5))
+
     # be careful when changing the number of files and the number of records from one file !!!
     # it takes time and disc space !!!
     create_shuffled_data(FILES_LOCATION, FILES_LOCATION + "shuffled/", num_to_class, SHUFFLED_CSV_NUMBER, ROWS_PER_CLASS)
 
+    # %% get train arrays
+    train_grand = []
+    num_classes = 340
+    imheight, imwidth = 32, 32
+    ims_per_class = 2000
+    row=5
+    for row in range(len(train)):
+        print(train.drawing.iloc[row])
+        print(row)
+        #imagebag = bag.from_sequence(train.drawing.values).map(create_bitmap)
+        #trainarray = np.array(imagebag.compute())  # PARALLELIZE
+        trainarray = create_bitmap(train.drawing.iloc[row], imheight, imwidth)
+        trainarray = np.array(trainarray)
+        #trainarray = np.reshape(trainarray, (ims_per_class, -1))
+        trainarray = np.reshape(trainarray, (1, imheight*imwidth))
+        #labelarray = np.full((train.shape[0], 1), row)
+        #trainarray = np.concatenate((row, trainarray), axis=1)
+       # trainarray
+        train_grand.append(trainarray)
+
+
+    #train_grand = np.array([train_grand.pop() for i in np.arange(num_classes)])  # less memory than np.concatenate
+    #train_grand = train_grand.reshape((-1, (imheight * imwidth + 1)))
+
+    #del trainarray
+    #del train
+
+    import glob
+    num_classes = 340  # 340 max
+    imheight, imwidth = 32, 32
+    ims_per_class = 2000  # max?
+    # %% get train arrays
+    train_grand = []
+#    class_paths = glob('C:/datasets/train_simplified/*.csv')
+    for i in range(num_classes):
+        train = train
+            #pd.read_csv(c, usecols=['drawing', 'recognized'], nrows=ims_per_class * 5 // 4)
+        #train = train[train.recognized == True].head(ims_per_class)
+        imagebag = bag.from_sequence(train.drawing.values).map(create_bitmap)
+        trainarray = np.array(imagebag.compute())  # PARALLELIZE
+        trainarray = np.reshape(trainarray, (ims_per_class, -1))
+        labelarray = np.full((train.shape[0], 1), i)
+        trainarray = np.concatenate((labelarray, trainarray), axis=1)
+        train_grand.append(trainarray)
+
+    train_grand = np.array([train_grand.pop() for i in np.arange(num_classes)])  # less memory than np.concatenate
+    train_grand = train_grand.reshape((-1, (imheight * imwidth + 1)))
+
+    del trainarray
+    del train
+
+
+    print(train_grand[0:5])
     # Data transformation
 
     # Model
     # CNN
-    model = Sequential()
-    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(64, 64, 1), activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(32, kernel_size=(3, 3), padding='same', activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Flatten())
-    model.add(Dense(train.shape[0], activation='softmax'))
-    model.summary()
+    #model = Sequential()
+    #model.add(Conv2D(32, kernel_size=(3, 3), padding='same', input_shape=(64, 64, 1), activation='relu'))
+    #model.add(MaxPooling2D(pool_size=(2, 2)))
+    #model.add(Conv2D(32, kernel_size=(3, 3), padding='same', activation='relu'))
+    #model.add(MaxPooling2D(pool_size=(2, 2)))
+    #model.add(Flatten())
+    #model.add(Dense(train.shape[0], activation='softmax'))
+    #model.summary()
 
     # Compilation of the model
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     # Model Evaluation
 
