@@ -182,6 +182,8 @@ if __name__ == '__main__':
     create_shuffled_data(FILES_LOCATION, FILES_LOCATION + "shuffled/", num_to_class, SHUFFLED_CSV_NUMBER, ROWS_PER_CLASS)
 
     # Data transformation
+    train['input'] = train.drawing.apply(lambda y: create_bitmap(str(y)))
+    print(train.input[:5])
 
     # Model
     # CNN
