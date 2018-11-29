@@ -7,12 +7,13 @@ import datetime
 import json
 from tqdm import tqdm, tnrange  # trange(i) is a special optimised instance of tqdm(range(i))
 from PIL import Image, ImageDraw
+from sklearn.model_selection import train_test_split
 
 # Imports for the CNN
-import tensorflow as tf
-from tensorflow import keras
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+#import tensorflow as tf
+#from tensorflow import keras
+#from keras.models import Sequential
+#from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
 # Parameters
 FILES_LOCATION = mc.DATA_SET_DIR_PATH
@@ -179,11 +180,18 @@ if __name__ == '__main__':
 
     # be careful when changing the number of files and the number of records from one file !!!
     # it takes time and disc space !!!
-    create_shuffled_data(FILES_LOCATION, FILES_LOCATION + "shuffled/", num_to_class, SHUFFLED_CSV_NUMBER, ROWS_PER_CLASS)
+    #create_shuffled_data(FILES_LOCATION, FILES_LOCATION + "shuffled/", num_to_class, SHUFFLED_CSV_NUMBER, ROWS_PER_CLASS)
 
     # Data transformation
+    train['input'] = None
     train['input'] = train.drawing.apply(lambda y: create_bitmap(str(y)))
     print(train.input[:5])
+
+    train = train[['input', 'word']]
+    train.word = train.word.astype('category')
+    print(train.head(5))
+
+    X_train, X_test, y_train, y_test = train_test_split(train.input, train.word)
 
     # Model
     # CNN
