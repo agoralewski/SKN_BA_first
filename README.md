@@ -4,7 +4,7 @@
 Link do konkursu: https://www.kaggle.com/c/quickdraw-doodle-recognition
 
 **Pilne rzeczy do zrobienia** - Skończyć kod umożliwiający generowanie predykcji
-- [ ] Podział zaimportowanego zbioru na train i test (inputy funkcji fit)
+- [x] Podział zaimportowanego zbioru na train i test (inputy funkcji fit)
 - [ ] Zaaplikowanie funkcji fit do naszego modelu (najlepiej z omówieniem poszczególnych jej parametrów
 - [ ] Import pliku test z kaggle 
 - [ ] Zaaplikowanie funkcji predict na zbiór testowy z kaggle
