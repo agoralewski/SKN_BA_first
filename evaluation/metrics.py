@@ -1,12 +1,13 @@
-''' metrics used to evaluate submissions for the competition 
-    https://www.kaggle.com/c/quickdraw-doodle-recognition ''' 
+""" metrics used to evaluate submissions for the competition
+    https://www.kaggle.com/c/quickdraw-doodle-recognition """
 
 import numpy as np
+
 
 def apk(actual, predicted, k=10):
     """
     Computes the average precision at k.
-    This function computes the average prescision at k between two lists of
+    This function computes the average precision at k between two lists of
     items.
     Parameters
     ----------
@@ -37,10 +38,11 @@ def apk(actual, predicted, k=10):
 
     return score / min(len(actual), k)
 
+
 def mapk(actual, predicted, k=10):
     """
     Computes the mean average precision at k.
-    This function computes the mean average prescision at k between two lists
+    This function computes the mean average precision at k between two lists
     of lists of items.
     Parameters
     ----------
@@ -57,4 +59,4 @@ def mapk(actual, predicted, k=10):
     score : double
             The mean average precision at k over the input lists
     """
-    return np.mean([apk(a,p,k) for a,p in zip(actual, predicted)])
+    return np.mean([apk(a, p, k) for a, p in zip(actual, predicted)])
